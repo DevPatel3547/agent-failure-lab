@@ -1,0 +1,6 @@
+include LICENSE README.md CONTRIBUTING.md SECURITY.md
+recursive-include agent_failure_lab/assets *
+recursive-include agent_failure_lab/fixtures *.json
+recursive-include tests *.py
+recursive-include examples *.py
+recursive-include docs *.md *.png

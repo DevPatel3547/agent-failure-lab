@@ -1,0 +1,17 @@
+__pycache__/
+.venv/
+.env
+.env.*
+!.env.example
+/GAME_PLAN.md
+/reports/
+/runs/
+/dist/
+/build/
+*.egg-info/
+*.sqlite*
+.coverage
+.ruff_cache/
+.pytest_cache/
+.DS_Store
+/BUILD_STATUS.md

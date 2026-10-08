@@ -1,0 +1,168 @@
+[
+  {
+    "id": "normal",
+    "name": "Normal response",
+    "description": "The provider commits and acknowledges one ticket."
+  },
+  {
+    "id": "lost-ack",
+    "name": "Lost acknowledgement",
+    "description": "The write commits but its response is lost.",
+    "fault": "timeout_after"
+  },
+  {
+    "id": "before-commit",
+    "name": "Timeout before commit",
+    "description": "The request fails before the provider writes.",
+    "fault": "timeout_before"
+  },
+  {
+    "id": "late-commit",
+    "name": "Late commit",
+    "description": "The original write is still running when a retry arrives.",
+    "fault": "late_commit"
+  },
+  {
+    "id": "stale-read",
+    "name": "Stale read with keys",
+    "description": "Read-back lags behind a committed write; keys remain available.",
+    "fault": "timeout_after",
+    "visibility_delay": 6
+  },
+  {
+    "id": "no-lookup",
+    "name": "No lookup with keys",
+    "description": "The provider supports keys but no read-back.",
+    "fault": "timeout_after",
+    "lookup": false
+  },
+  {
+    "id": "no-keys",
+    "name": "No provider keys",
+    "description": "The lost acknowledgement can be reconciled with read-back.",
+    "fault": "timeout_after",
+    "idempotency": false
+  },
+  {
+    "id": "late-no-keys",
+    "name": "Late commit without keys",
+    "description": "An empty lookup does not prove the original request failed.",
+    "fault": "late_commit",
+    "idempotency": false,
+    "commit_delay": 5
+  },
+  {
+    "id": "stale-no-keys",
+    "name": "Stale lookup without keys",
+    "description": "A committed write is invisible for several clock ticks.",
+    "fault": "timeout_after",
+    "idempotency": false,
+    "visibility_delay": 6
+  },
+  {
+    "id": "invisible-no-keys",
+    "name": "No recovery contract",
+    "description": "Neither idempotency nor lookup is available after a lost response.",
+    "fault": "timeout_after",
+    "idempotency": false,
+    "lookup": false
+  },
+  {
+    "id": "unfinished-no-keys",
+    "name": "Work can remain unfinished",
+    "description": "The first request never writes; the caller cannot establish that fact.",
+    "fault": "timeout_before",
+    "idempotency": false,
+    "lookup": false
+  },
+  {
+    "id": "malformed-ack",
+    "name": "Malformed response",
+    "description": "The ticket exists, but the response cannot be parsed.",
+    "fault": "malformed_ack"
+  },
+  {
+    "id": "redelivery",
+    "name": "Transport redelivery with keys",
+    "description": "One tool call is delivered twice; the provider honors keys.",
+    "fault": "redelivery"
+  },
+  {
+    "id": "redelivery-no-keys",
+    "name": "Transport redelivery without keys",
+    "description": "Duplicate effects occur inside the provider boundary without caller retries.",
+    "fault": "redelivery",
+    "idempotency": false
+  },
+  {
+    "id": "rate-limit",
+    "name": "Rate limit",
+    "description": "A definite non-write response includes a retry delay.",
+    "fault": "rate_limit",
+    "retry_after": 3
+  },
+  {
+    "id": "prolonged-timeout",
+    "name": "Prolonged outage",
+    "description": "All writes time out before reaching the service.",
+    "fault": "timeout_before",
+    "fault_count": 100
+  },
+  {
+    "id": "rejected",
+    "name": "Explicit rejection",
+    "description": "The provider explicitly rejects every write.",
+    "fault": "rejected",
+    "fault_count": 100
+  },
+  {
+    "id": "lookup-down",
+    "name": "Read-back unavailable",
+    "description": "The write commits, its acknowledgement is lost, and lookup is down.",
+    "fault": "lookup_unavailable",
+    "idempotency": false
+  },
+  {
+    "id": "key-expiry",
+    "name": "Expired deduplication window",
+    "description": "The provider forgets a key before a retry; no lookup is available.",
+    "fault": "timeout_after",
+    "lookup": false,
+    "key_ttl": 1
+  },
+  {
+    "id": "restart-after-write",
+    "name": "Worker restart after write",
+    "description": "The worker stops after dispatch and before recording the response.",
+    "crash_after_write": true
+  },
+  {
+    "id": "restart-no-keys",
+    "name": "Restart without keys",
+    "description": "A durable intent survives but the acknowledgement is not saved.",
+    "crash_after_write": true,
+    "idempotency": false,
+    "lookup": false
+  },
+  {
+    "id": "restart-before-commit",
+    "name": "Restart during uncertainty",
+    "description": "The request does not write and the worker stops before recording the timeout.",
+    "fault": "timeout_before",
+    "crash_after_write": true
+  },
+  {
+    "id": "revoked-before",
+    "name": "Authorization expired",
+    "description": "The provider refuses writes after authorization expiration.",
+    "authorization_until": 0
+  },
+  {
+    "id": "revoked-in-flight",
+    "name": "Authorization expires in flight",
+    "description": "The provider checks authorization again when a delayed write commits.",
+    "fault": "late_commit",
+    "authorization_until": 2,
+    "commit_delay": 5
+  }
+]

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Agent Failure Lab · Experiment report</title>
+<style>__STYLE__</style>
+</head>
+<body>
+<a class="skip" href="#cases">Skip to experiment cases</a>
+<header class="topbar"><a class="brand" href="#"><span class="mark" aria-hidden="true">↳</span> Agent Failure Lab</a><div class="topright"><span class="local-dot"></span><span>Local report · no telemetry</span><button id="download" class="quiet">Export JSON ↓</button></div></header>
+<main>
+<section class="intro"><div><div class="eyebrow">TOOL CALLS / OBSERVABLE CONSEQUENCES</div><h1>“Done” is a claim.<br><span>Check the effects.</span></h1><p>Reproduce uncertain writes. Follow the execution.<br>Separate an agent’s report from what actually happened.</p></div><aside class="run-meta"><span class="eyebrow">EXPERIMENT</span><strong id="experiment-id"></strong><dl id="metadata"></dl></aside></section>
+<div id="notice" class="notice" role="note"></div>
+<section aria-label="Results by recovery strategy" id="summaries" class="summaries"></section>
+<section class="workspace" id="cases" aria-labelledby="cases-title">
+<div class="workspace-head"><div><div class="eyebrow">CASE EXPLORER</div><h2 id="cases-title">Find the moment it went wrong.</h2></div><span id="count" aria-live="polite"></span></div>
+<div class="filters"><label>Search cases<input id="search" type="search" placeholder="Lost acknowledgement, restart…"></label><label>Strategy<select id="mode"><option value="">All strategies</option><option value="plain">Plain</option><option value="guided">Guided</option><option value="guarded">Guarded</option></select></label><label>Outcome<select id="outcome"><option value="">All outcomes</option><option value="issue">Needs attention</option><option value="pass">Confirmed correctly</option><option value="unknown">Unknown outcome</option></select></label></div>
+<div class="explorer"><div class="case-list" id="case-list" aria-label="Experiment cases"></div><div class="detail" id="detail" aria-live="polite"><p>Select a case.</p></div></div>
+</section>
+<section class="method"><div><div class="eyebrow">READING THIS REPORT</div><h2>Three layers. Different evidence.</h2></div><div class="method-grid"><article><span class="layer agent">01 / Agent</span><h3>What the caller knew</h3><p>Public capabilities, earlier tool responses, and the chosen next action. Hidden fault names and private service state never enter model prompts.</p></article><article><span class="layer world">02 / World</span><h3>What actually changed</h3><p>The service’s committed tickets, including delayed writes that finish after the agent stops. Reveal these events in the trace.</p></article><article><span class="layer grader">03 / Grader</span><h3>Whether the claim holds</h3><p>Checks effect count, payload and returned ticket identity. Unknown outcomes, unfinished work, and execution errors stay visible.</p></article></div></section>
+<footer><p><strong>Scope:</strong> controlled ticket-service fixtures, not a representative estimate of real-world failure rates. Guarded recovery depends on provider contracts and may leave work unresolved. This is not proof of agent containment or universal exactly-once behavior.</p><p id="provenance"></p><p>Open source · <a href="https://github.com/DevPatel3547/agent-failure-lab" target="_blank" rel="noopener noreferrer">Source and methodology ↗</a></p></footer>
+</main>
+<noscript><p class="notice">Enable JavaScript to inspect this self-contained report, or read the accompanying results.json file.</p></noscript>
+<script id="report-data" type="application/json">__DATA__</script>
+<script>__SCRIPT__</script>
+</body></html>
