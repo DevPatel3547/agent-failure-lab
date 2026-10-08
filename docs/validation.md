@@ -4,10 +4,10 @@ This release separates an implemented feature from a live-service claim.
 
 ## Checked locally
 
-- All 71 backend tests passed locally on Python 3.12, including real loopback HTTP requests, subprocess termination after commit, concurrent recovery/backoff, all-fixture replay, provider protocol validation, incomplete-run accounting, GitHub pagination, and report escaping. The added tests cover real proxy faults, isolated service processes, strong reference policies, compressed reports, reduction minimality, and the v0.1 false-failure regression.
-- Chromium acceptance checks passed for the 72-case default report and the 24-case real-HTTP report, including the reference filter and transport evidence panel, strategy/search/outcome filters, explicit world-state reveal, trace scrubbing, JSON download, injected HTML displayed as text, zero external report requests, and 390-pixel mobile layout.
+- All 86 backend tests passed locally on Python 3.12, including real loopback HTTP requests, subprocess termination after commit, concurrent recovery/backoff, all-fixture replay, provider protocol validation, incomplete-run accounting, GitHub pagination, and report escaping. The added tests cover real proxy faults, isolated service processes, strong reference policies, compressed reports, reduction minimality, and the v0.1 false-failure regression.
+- Chromium acceptance checks passed for the 72-case default report and the 24-case real-HTTP report, including the reference filter and transport evidence panel, the 16-case SDK report with exact inputs, and the incomplete evaluation coverage/accounting panel, strategy/search/outcome filters, explicit world-state reveal, trace scrubbing, JSON download, injected HTML displayed as text, zero external report requests, and 390-pixel mobile layout.
 - Ruff lint and formatting checks and JavaScript syntax checks passed.
-- Source and wheel builds succeeded. The wheel was installed into a clean environment and ran a campaign, rendered a compressed report, and replayed the reduced failure outside the source tree, confirming the new CLI commands, bundled fixtures, and report assets. Source and wheel archives were checked for private files.
+- Version 0.3 source and wheel builds succeeded. The wheel was installed into a clean environment and ran a campaign, rendered a compressed report, and replayed the reduced failure outside the source tree, confirming the bundled fixtures and report assets. The v0.3 wheel also created a frozen evaluation plan and ran its preflight outside the source checkout without API credentials or network calls. Source and wheel archives were checked for private files.
 
 CI is configured for Python 3.10, 3.11, 3.12, and 3.13, installed-wheel execution outside the source tree, and Chromium. The repository's Actions results are the authority for whether those checks have passed on GitHub.
 
@@ -26,6 +26,12 @@ These are reference mechanism demonstrations, **not AI model results**. The guar
 ## Published v0.2 evidence
 
 The [failure study](failure-study.md) reports the complete 64-case seeded campaign (192 episodes), 24 real-HTTP cases, five-to-two-action reduction, and the preserved before/after regression. Machine-readable artifacts and their SHA-256 hashes are under [evidence](evidence/manifest.json). The default named-suite unknown count increased to seven after the fix because a rejected in-flight retry no longer resolves earlier uncertainty.
+
+## v0.3 evaluation and runtime integration
+
+The added 15 evaluation tests check plan/code drift, invalid prices, reserve-before-dispatch, missing usage, restart-safe dollar/request caps, atomic concurrent reservations, bound violations, cache token accounting, exclusive runner locking, idempotent full-schedule resume, preserved errors, interruption recovery and incomplete paired outcomes. All use injected API responses; no model capability is measured.
+
+The actual pinned OpenAI Agents SDK ran 16 real-HTTP integration cases and two parallel-call cases, with tracing disabled and external parent-process socket connections rejected. The [integration record](agents-sdk.md) distinguishes those results from live inference. The [v0.3 manifest](evidence/v0.3-manifest.json) hashes the separate portable dataset.
 
 ## Not validated by this release
 

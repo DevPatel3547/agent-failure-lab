@@ -116,6 +116,36 @@ def parser():
         "reproduce", help="Replay a reduced case; exit 1 if its invariant is violated"
     )
     reproduction.add_argument("artifact", type=Path)
+    sdk = commands.add_parser("sdk-demo", help="Run real OpenAI Agents SDK tools with scripted inference")
+    sdk.add_argument("--output", type=Path, default=Path("reports/sdk"))
+    planning = commands.add_parser("eval-plan", help="Freeze a live evaluation plan without API calls")
+    planning.add_argument("--provider", choices=("openai", "anthropic"), required=True)
+    planning.add_argument("--model", required=True)
+    planning.add_argument("--fixtures", type=Path)
+    planning.add_argument("--scenario", action="append")
+    planning.add_argument("--input-usd-per-million", required=True)
+    planning.add_argument("--output-usd-per-million", required=True)
+    planning.add_argument(
+        "--context-tokens",
+        type=int,
+        required=True,
+        help="Full documented model context window (not expected prompt length)",
+    )
+    planning.add_argument("--price-source", required=True)
+    planning.add_argument("--max-usd", required=True)
+    planning.add_argument("--max-requests", type=positive, default=300)
+    planning.add_argument("--max-output-tokens", type=positive, default=512)
+    planning.add_argument("--trials", type=positive, default=3)
+    planning.add_argument("--max-steps", type=positive, default=12)
+    planning.add_argument("--seed", type=int, default=17)
+    planning.add_argument("--output", type=Path, default=Path("reports/evaluation-plan.json"))
+    evaluation = commands.add_parser("evaluate", help="Run or resume a frozen live evaluation")
+    evaluation.add_argument("plan", type=Path)
+    evaluation.add_argument(
+        "--dry-run", action="store_true", help="Validate plan; no key or network required"
+    )
+    evaluation.add_argument("--db", type=Path, default=Path("runs/evaluation.sqlite3"))
+    evaluation.add_argument("--output", type=Path, default=Path("reports/evaluation"))
     return root
 
 
@@ -157,7 +187,69 @@ def announce(db, experiment_id, output):
 def main(argv=None):
     args = parser().parse_args(argv)
     try:
-        if args.command == "wire-demo":
+        if args.command == "sdk-demo":
+            try:
+                import agents  # noqa: F401
+            except ImportError:
+                raise ValueError("Install the optional integration with: pip install '.[agents]'") from None
+            from .agents_integration import run_sdk_demo
+
+            data = run_sdk_demo(args.output)
+            print(
+                json.dumps(
+                    {"report": str((args.output / "index.html").resolve()), "summary": data["summary"]},
+                    indent=2,
+                )
+            )
+        elif args.command == "eval-plan":
+            from .evaluation import make_plan, preflight
+
+            scenarios = load_scenarios(args.fixtures)
+            if args.scenario:
+                unknown = set(args.scenario) - {s.id for s in scenarios}
+                if unknown:
+                    raise ValueError(f"Unknown scenarios: {sorted(unknown)}")
+                scenarios = [s for s in scenarios if s.id in args.scenario]
+            plan = make_plan(
+                scenarios,
+                args.provider,
+                args.model,
+                input_price=args.input_usd_per_million,
+                output_price=args.output_usd_per_million,
+                context_tokens=args.context_tokens,
+                price_source=args.price_source,
+                max_usd=args.max_usd,
+                max_requests=args.max_requests,
+                max_output_tokens=args.max_output_tokens,
+                trials=args.trials,
+                max_steps=args.max_steps,
+                seed=args.seed,
+            )
+            args.output.parent.mkdir(parents=True, exist_ok=True)
+            with args.output.open("x") as target:
+                target.write(json.dumps(plan, indent=2) + "\n")
+            print(json.dumps(preflight(plan), indent=2))
+        elif args.command == "evaluate":
+            from .evaluation import evaluate, preflight, read_plan
+
+            plan = read_plan(args.plan)
+            if args.dry_run:
+                print(json.dumps(preflight(plan), indent=2))
+            else:
+                data = evaluate(plan, args.db, args.output)
+                print(
+                    json.dumps(
+                        {
+                            "report": str((args.output / "index.html").resolve()),
+                            "coverage": data["coverage"],
+                            "paired_outcomes": data["paired_outcomes"],
+                            "budget": {k: v for k, v in data["request_ledger"].items() if k != "records"},
+                        },
+                        indent=2,
+                    )
+                )
+                return 0 if data["coverage"]["complete"] else 2
+        elif args.command == "wire-demo":
             from .wire import run_wire_demo
 
             data = run_wire_demo(args.output, args.max_steps)

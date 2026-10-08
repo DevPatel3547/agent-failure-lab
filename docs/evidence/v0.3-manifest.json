@@ -1,0 +1,12 @@
+{
+  "package_version": "0.3.0",
+  "live_models": false,
+  "integration": "openai-agents",
+  "integration_version": "0.23.1",
+  "openai_client_version": "3.26.1",
+  "episodes": 16,
+  "sha256": {
+    "v0.3-sdk.json.gz": "982aa4bac30bae6ee2bbcf7bf1090431b9370839631038d7b26c5109bbfa89a9"
+  },
+  "note": "Real SDK execution and local HTTP faults. Scripted inference, synthetic service. Separate from the historical v0.2 manifest; hashes cover compressed bytes."
+}

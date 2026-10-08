@@ -100,6 +100,48 @@ def main():
                 page.screenshot(path=str(output.with_name("wire-preview.png")), full_page=False)
                 page.set_viewport_size({"width": 390, "height": 844})
                 assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
+            # Synthetic API responses must never appear as real model evidence.
+            from agent_failure_lab.evaluation import evaluate, make_plan
+            from test_evaluation import Answers, finish
+
+            plan = make_plan(
+                load_scenarios()[:1],
+                "openai",
+                "test-model",
+                input_price="1",
+                output_price="2",
+                context_tokens=1000,
+                price_source="https://example.test/pricing",
+                max_usd="1",
+                max_requests=1,
+                max_output_tokens=100,
+                trials=1,
+                max_steps=2,
+            )
+            evaluated = evaluate(
+                plan,
+                root / "evaluation.sqlite3",
+                root / "evaluation",
+                transport=Answers([finish()]),
+                api_key="test-only",
+            )
+            page.goto((root / "evaluation" / "index.html").as_uri())
+            assert "Injected test responses" in page.locator("#notice").inner_text()
+            assert "Model decisions came from" not in page.locator("#notice").inner_text()
+            assert "Incomplete evidence" in page.locator("#notice").inner_text()
+            page.locator("#evaluation-audit summary").click()
+            assert "charged_or_reserved_usd" in page.locator("#evaluation-audit").inner_text()
+            assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
+            assert evaluated["coverage"]["not_started"] == 1
+            sdk_report = Path("reports/sdk/index.html")
+            if sdk_report.exists():
+                page.goto(sdk_report.resolve().as_uri())
+                assert page.locator(".case-button").count() == 16
+                assert "openai-agents" in page.locator("#metadata").inner_text()
+                page.locator("#sdk-inputs summary").click()
+                assert "function_call_output" in page.locator("#sdk-inputs").inner_text()
+                assert "No AI models were evaluated" in page.locator("#notice").inner_text()
+            assert not external_requests, external_requests
             assert not errors, errors
             browser.close()
         print(

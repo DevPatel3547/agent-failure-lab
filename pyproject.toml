@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-failure-lab"
-version = "0.2.0"
+version = "0.3.0"
 description = "Reproduce uncertain tool writes, inspect agent traces, and grade committed effects."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -15,6 +15,7 @@ dependencies = []
 classifiers = ["Programming Language :: Python :: 3", "Topic :: Software Development :: Testing"]
 
 [project.optional-dependencies]
+agents = ["openai-agents==0.23.1", "openai==3.26.1"]
 dev = ["ruff==0.16.10", "build==1.6.1", "playwright==1.63.0"]
 
 [project.scripts]

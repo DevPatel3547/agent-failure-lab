@@ -36,6 +36,8 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install -e '.[dev]'
       - run: python -m playwright install --with-deps chromium
+      - run: python -m pip install -e '.[agents]'
+      - run: python tests/sdk_check.py
       - run: python -m agent_failure_lab wire-demo --output reports/wire
       - run: python tests/browser_check.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

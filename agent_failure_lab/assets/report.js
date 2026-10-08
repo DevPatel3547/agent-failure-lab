@@ -10,6 +10,7 @@
   };
   const meta = data.experiment;
   const results = data.results;
+  const injected = meta.validation_kind === "injected-transport-test";
   const scripted = meta.provider === "scripted";
   const replay = meta.provider === "replay";
   const wire = meta.environment === "http-loopback-separate-process";
@@ -19,10 +20,18 @@
   for (const [label, value] of [["Provider", meta.provider], ["Model", meta.model || (replay ? "No model · action replay" : "No model · scripted")], ["Environment", wire ? "Real HTTP · isolated service" : "Simulated ticket service"], ["Executed", `${results.length} / ${meta.scheduled_episodes}`], ["Created", new Date(meta.created).toLocaleString()]]) {
     byId("metadata").append(node("dt", label), node("dd", value));
   }
+  if (meta.integration) byId("metadata").append(node("dt", "Runtime"), node("dd", `${meta.integration} ${meta.integration_version}`));
   const notice = byId("notice");
-  notice.append(node("strong", scripted ? (wire ? "Real HTTP fault experiment · scripted agents. " : "Scripted reference experiment. ") : replay ? "Recorded action replay. " : "Live model / simulated environment. "));
-  notice.append(document.createTextNode(replay ? "Previously recorded actions ran against a fresh simulated service. This is a reproducibility check, not a new model evaluation." : scripted ? (wire ? "No AI models were evaluated. Requests cross a real local HTTP proxy and a separate ticket-service process. The service and tasks are synthetic; these are not production failure rates." : "No AI models were evaluated. These synthetic cases demonstrate failure mechanisms; they do not measure real-world model failure rates.") : "Model decisions came from the named API. Tool effects occurred in a controlled simulator. Results describe this harness and these fixtures, not general model safety."));
+  notice.append(node("strong", injected ? "Injected test responses · no live model calls. " : scripted ? (wire ? "Real HTTP fault experiment · scripted agents. " : "Scripted reference experiment. ") : replay ? "Recorded action replay. " : "Live model / simulated environment. "));
+  notice.append(document.createTextNode(injected ? "This checks the evaluation machinery using synthetic API responses. It is not evidence about the named model. " : replay ? "Previously recorded actions ran against a fresh simulated service. This is a reproducibility check, not a new model evaluation." : scripted ? (wire ? "No AI models were evaluated. Requests cross a real local HTTP proxy and a separate ticket-service process. The service and tasks are synthetic; these are not production failure rates." : "No AI models were evaluated. These synthetic cases demonstrate failure mechanisms; they do not measure real-world model failure rates.") : "Model decisions came from the named API. Tool effects occurred in a controlled simulator. Results describe this harness and these fixtures, not general model safety."));
   if (results.length < meta.scheduled_episodes) notice.append(node("strong", ` Incomplete run: ${meta.scheduled_episodes - results.length} episodes did not start.`));
+  if (data.coverage) {
+    const c = data.coverage;
+    notice.append(node("strong", ` Evaluation coverage: ${c.recorded}/${c.planned} recorded; ${c.not_started} not started. ${c.complete ? "Schedule complete." : "Incomplete evidence — inspect execution statuses."}`));
+    const audit = node("details", undefined, "details-extra"); audit.id = "evaluation-audit";
+    audit.append(node("summary", "Evaluation coverage, paired outcomes & request accounting"), node("pre", JSON.stringify({coverage:c, paired_outcomes:data.paired_outcomes, request_ledger:data.request_ledger, plan:meta.plan}, null, 2)));
+    notice.after(audit);
+  }
   for (const mode of meta.modes || []) {
     const summary = data.summary.find(item => item.mode === mode) || {episodes:0,task_success:0,duplicates:0,unknown:0,missing:0,errors:0,limits:0};
     const card = node("article", undefined, "summary-card");
@@ -87,6 +96,10 @@
     const history = node("details", undefined, "details-extra");
     history.append(node("summary", "Exact observations supplied to the agent"), node("pre", JSON.stringify(row.visible_history || [], null, 2)));
     panel.append(history);
+    if (row.sdk_model_inputs) {
+      const inputs = node("details", undefined, "details-extra"); inputs.id = "sdk-inputs";
+      inputs.append(node("summary", "Exact SDK model inputs · scripted inference"), node("pre", JSON.stringify(row.sdk_model_inputs, null, 2))); panel.append(inputs);
+    }
     if (row.wire_events) {
       const network = node("details", undefined, "details-extra");
       network.id = "wire-events";

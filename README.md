@@ -4,6 +4,8 @@
 
 A local reliability workbench for APIs with side effects. It combines real HTTP fault injection, an inspectable service simulator, durable recovery, and small reproducible failure cases. Python 3.10+, no runtime dependencies.
 
+[Reviewer guide](docs/reviewer-guide.md) · [SDK integration](docs/agents-sdk.md) · [Model evaluation protocol](docs/evaluation.md)
+
 [Interactive HTTP experiment](https://devpatel3547.github.io/agent-failure-lab/) · [Failure study](docs/failure-study.md) · [Raw evidence](docs/evidence/manifest.json) · [CI](https://github.com/DevPatel3547/agent-failure-lab/actions/workflows/ci.yml)
 
 [![CI](https://github.com/DevPatel3547/agent-failure-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/DevPatel3547/agent-failure-lab/actions/workflows/ci.yml)
@@ -89,6 +91,21 @@ python3 -m agent_failure_lab render docs/evidence/v0.2-campaign.json.gz
 ```
 
 [Evidence manifest and hashes](docs/evidence/manifest.json) · [Methodology](docs/methodology.md) · [Architecture](docs/architecture.md) · [Validation](docs/validation.md)
+
+## Use it inside the OpenAI Agents SDK
+
+```sh
+python3 -m pip install -e '.[agents]'
+python3 -m agent_failure_lab sdk-demo
+```
+
+This runs the **actual SDK Runner and function tools** with scripted model responses against real local HTTP faults. The published 16-case integration produced 4 duplicate cases with direct retry and 0 with guarded recovery; guarded left 2 tasks unresolved. Parallel tool-call checks also verify one logical operation across distinct SDK call IDs. [Complete SDK evidence and reusable integration](docs/agents-sdk.md).
+
+## Freeze, budget, and resume a real model experiment
+
+`afl eval-plan` freezes scenarios, prompts/code fingerprint, treatment schedule and explicit request/cost assumptions before any model calls. `afl evaluate` persists reservations before dispatch, resumes the full schedule, preserves failures and reports missing pairs. It does not reset the budget on restart. The HTML shows coverage and request accounting alongside outcomes.
+
+**Live results are still pending.** Test doubles validate the machinery, not model performance. Dollar limits depend on correct operator-supplied full-context limits and maximum applicable prices. [Commands, cost assumptions and interpretation](docs/evaluation.md).
 
 ## Live models and other integrations
 
