@@ -49,3 +49,13 @@ API adapters record token usage when returned. Missing or malformed usage is cou
 ## Useful next evidence
 
 A credible extension is a minimized failure from an actual owned connector: document its observed request/response behavior, add a reproducing fixture, keep provider uncertainty explicit, and show the fix plus any availability cost. For live models, preserve exact model ids, prompts, settings, raw report exports, and costs; separate independent trials from deterministic replays.
+
+## v0.2 reference baseline, exploration, and wire experiment
+
+The optional `reference` mode uses a deterministic contract-aware policy: stable keys, reconciliation, full declared rate-limit waits, conflict detection, and explicit unknown outcomes. It conservatively avoids uncertain replay with finite key lifetimes because it cannot establish a sufficient lifetime from the public history. It is stronger than the original guided script and is always labeled scripted. Live-model experiments cannot mix this mode into their treatment set.
+
+`campaign` runs plain/reference/guarded over seeded independent parameter combinations. The generator version, seed, case count, exact fixtures, and all results are saved. This expands coverage but does not produce representative incident frequencies. `minimize` performs bounded complement-based delta debugging of recorded actions, followed by a deletion check when the budget allows. It preserves the target violation plus the duplicate/wrong-payload signature. It does not infer root cause, optimize scenario parameters, or rerun a model.
+
+`wire-demo` compares those same three scripted policies with actual socket failures in a local proxy and separate healthy service processes. Service business state still uses the controlled ticket fixture, including its logical clock. The physical transport is real; workload semantics remain synthetic. Proxy evidence and committed effects are separate. The report exposes both without claiming the proxy can infer commit status.
+
+Portable `.json.gz` evidence is accepted by `render`, `minimize`, `replay`, and `compare` with a 50 MB expanded-size limit. The reduced artifact is separately content-hashed and validated. A replay fixes the original final action as well as tool actions; changing a gateway does not retroactively change an old caller's recorded claim.

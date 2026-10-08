@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-failure-lab"
-version = "0.1.0"
+version = "0.2.0"
 description = "Reproduce uncertain tool writes, inspect agent traces, and grade committed effects."
 readme = "README.md"
 requires-python = ">=3.10"

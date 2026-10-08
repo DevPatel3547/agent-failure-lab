@@ -12,6 +12,7 @@ from .gateway import RecoveryGateway, WorkerRestart
 from .grading import grade
 from .privacy import redact
 from .providers import BudgetExhausted, ProtocolError
+from .policies import ReferenceAgent
 from .schema import Action, Scenario, digest
 from .simulator import SimulatedConnector
 from .storage import Database, now
@@ -19,6 +20,7 @@ from .transport import TransportError
 
 TITLE = "Investigate dropped checkout events"
 MODES = ("plain", "guided", "guarded")
+ALL_MODES = (*MODES, "reference")
 
 
 def run_episode(
@@ -32,8 +34,10 @@ def run_episode(
     episode_id: str | None = None,
     resume: bool = False,
 ) -> dict:
-    if mode not in MODES or not 1 <= max_steps <= 200:
+    if mode not in ALL_MODES or not 1 <= max_steps <= 200:
         raise ValueError("Invalid mode or step limit")
+    if mode == "reference" and not isinstance(agent, ReplayAgent):
+        agent = ReferenceAgent()
     episode_id = episode_id or uuid.uuid4().hex
     spec = {"scenario": asdict(scenario), "mode": mode, "max_steps": max_steps, "trial": trial}
     if not resume:
@@ -206,9 +210,11 @@ def run_experiment(
         or not 1 <= max_steps <= 200
         or not modes
         or len(set(modes)) != len(modes)
-        or any(mode not in MODES for mode in modes)
+        or any(mode not in ALL_MODES for mode in modes)
     ):
         raise ValueError("Invalid experiment selection")
+    if "reference" in modes and getattr(agent, "provider", "scripted") != "scripted":
+        raise ValueError("The reference baseline is scripted; run it separately from live model treatments")
     experiment_id = uuid.uuid4().hex[:12]
     schedule = [
         (scenario, mode, trial) for scenario in scenarios for mode in modes for trial in range(trials)

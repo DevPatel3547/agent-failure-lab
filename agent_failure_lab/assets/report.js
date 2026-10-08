@@ -12,15 +12,16 @@
   const results = data.results;
   const scripted = meta.provider === "scripted";
   const replay = meta.provider === "replay";
-  const labels = {plain: "Plain", guided: "Guided", guarded: "Guarded"};
-  const hints = scripted ? {plain: "Scripted retry", guided: "Scripted read-back", guarded: "Retry + recovery layer"} : {plain: "Base instructions", guided: "Recovery instructions", guarded: "Base + recovery layer"};
+  const wire = meta.environment === "http-loopback-separate-process";
+  const labels = {plain: "Plain", guided: "Guided", guarded: "Guarded", reference: "Reference"};
+  const hints = scripted ? {plain: "Scripted retry", guided: "Scripted read-back", guarded: "Retry + recovery layer", reference: "Contract-aware script"} : {plain: "Base instructions", guided: "Recovery instructions", guarded: "Base + recovery layer"};
   byId("experiment-id").textContent = meta.id;
-  for (const [label, value] of [["Provider", meta.provider], ["Model", meta.model || (replay ? "No model · action replay" : "No model · scripted")], ["Environment", "Simulated ticket service"], ["Executed", `${results.length} / ${meta.scheduled_episodes}`], ["Created", new Date(meta.created).toLocaleString()]]) {
+  for (const [label, value] of [["Provider", meta.provider], ["Model", meta.model || (replay ? "No model · action replay" : "No model · scripted")], ["Environment", wire ? "Real HTTP · isolated service" : "Simulated ticket service"], ["Executed", `${results.length} / ${meta.scheduled_episodes}`], ["Created", new Date(meta.created).toLocaleString()]]) {
     byId("metadata").append(node("dt", label), node("dd", value));
   }
   const notice = byId("notice");
-  notice.append(node("strong", scripted ? "Scripted reference experiment. " : replay ? "Recorded action replay. " : "Live model / simulated environment. "));
-  notice.append(document.createTextNode(replay ? "Previously recorded actions ran against a fresh simulated service. This is a reproducibility check, not a new model evaluation." : scripted ? "No AI models were evaluated. These hand-authored cases demonstrate failure mechanisms; they do not measure real-world model failure rates." : "Model decisions came from the named API. Tool effects occurred in a controlled simulator. Results describe this harness and these fixtures, not general model safety."));
+  notice.append(node("strong", scripted ? (wire ? "Real HTTP fault experiment · scripted agents. " : "Scripted reference experiment. ") : replay ? "Recorded action replay. " : "Live model / simulated environment. "));
+  notice.append(document.createTextNode(replay ? "Previously recorded actions ran against a fresh simulated service. This is a reproducibility check, not a new model evaluation." : scripted ? (wire ? "No AI models were evaluated. Requests cross a real local HTTP proxy and a separate ticket-service process. The service and tasks are synthetic; these are not production failure rates." : "No AI models were evaluated. These synthetic cases demonstrate failure mechanisms; they do not measure real-world model failure rates.") : "Model decisions came from the named API. Tool effects occurred in a controlled simulator. Results describe this harness and these fixtures, not general model safety."));
   if (results.length < meta.scheduled_episodes) notice.append(node("strong", ` Incomplete run: ${meta.scheduled_episodes - results.length} episodes did not start.`));
   for (const mode of meta.modes || []) {
     const summary = data.summary.find(item => item.mode === mode) || {episodes:0,task_success:0,duplicates:0,unknown:0,missing:0,errors:0,limits:0};
@@ -86,6 +87,12 @@
     const history = node("details", undefined, "details-extra");
     history.append(node("summary", "Exact observations supplied to the agent"), node("pre", JSON.stringify(row.visible_history || [], null, 2)));
     panel.append(history);
+    if (row.wire_events) {
+      const network = node("details", undefined, "details-extra");
+      network.id = "wire-events";
+      network.append(node("summary", "HTTP fault evidence · forwarding and delivery"), node("pre", JSON.stringify(row.wire_events, null, 2)));
+      panel.append(network);
+    }
     paintTrace(true);
   }
   function renderList() {

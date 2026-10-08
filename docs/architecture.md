@@ -56,3 +56,13 @@ The runner checkpoints its public history and pending action before invoking a t
 ## Portable reports
 
 Reports contain public observations, hidden effects, and a complete trace for investigation. The UI hides world/grader events by default, but they remain in the file. Reports must not be given to an agent as a blind evaluation prompt. Dynamic values are rendered as text and embedded JSON escapes HTML delimiters. Redaction is best effort; review reports before sharing real data.
+
+## v0.2: transport experiments and failure reduction
+
+`wire.py` separates three components: a caller with its durable journal, a fixed-upstream loopback fault proxy, and a ticket service in an owned child process with a separate ledger. Rules operate at the HTTP boundary after or before forwarding. The grader reads service state only after caller execution. Proxy events record transport observations rather than claiming authoritative commit or application-delivery knowledge.
+
+`policies.py` supplies a stronger public-contract-only baseline. It has no access to scenario parameters or the grader. It can reconstruct its decisions from public history without a hidden in-memory operation cache.
+
+`explore.py` generates seeded scenarios and shrinks recorded action sequences using a bounded delta-debugging loop. Every candidate runs in a fresh SQLite world. A final single-action deletion sweep distinguishes verified 1-minimality from a budget-limited result. Artifacts retain hashes, source episode, metrics, and the exact scenario/actions, and export an intentionally failing regression test.
+
+The v0.1 gateway audit exposed a request/operation distinction: rejecting a retry cannot terminally reject an earlier unresolved dispatch. `_persist` now preserves that uncertainty and refuses to confirm a reconciliation containing multiple tickets. This is an evidence-backed correction, not an expansion of the exactly-once guarantee.

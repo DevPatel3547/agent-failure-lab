@@ -15,7 +15,7 @@ from . import __version__
 from .connectors import HTTPConnector, fixture_handler
 from .providers import Budget, ModelAgent, ScriptedAgent
 from .report import bundle, compare, read_bundle, write_report
-from .runner import MODES, ReplayAgent, run_episode, run_experiment
+from .runner import ALL_MODES, MODES, ReplayAgent, run_episode, run_experiment
 from .schema import Scenario, digest, load_scenarios
 from .simulator import SimulatedConnector
 from .storage import Database
@@ -44,7 +44,7 @@ def parser():
         command.add_argument("--output", type=Path, default=Path("reports/latest"))
         command.add_argument("--fixtures", type=Path)
         command.add_argument("--scenario", action="append", help="Scenario id; repeat to select multiple")
-        command.add_argument("--modes", nargs="+", choices=MODES, default=list(MODES))
+        command.add_argument("--modes", nargs="+", choices=ALL_MODES, default=list(MODES))
         command.add_argument("--trials", type=positive, default=1)
         command.add_argument("--max-steps", type=positive, default=16)
         command.add_argument("--seed", type=int, default=0)
@@ -57,6 +57,9 @@ def parser():
     report.add_argument("experiment")
     report.add_argument("--db", type=Path, default=Path("runs/lab.sqlite3"))
     report.add_argument("--output", type=Path, default=Path("reports/latest"))
+    rendering = commands.add_parser("render", help="Render a portable JSON or JSON.gz report")
+    rendering.add_argument("report", type=Path)
+    rendering.add_argument("--output", type=Path, default=Path("reports/rendered"))
     replay = commands.add_parser("replay", help="Re-execute a recorded action sequence without model calls")
     replay.add_argument("report", type=Path)
     replay.add_argument("--episode", required=True)
@@ -82,6 +85,37 @@ def parser():
         "probe", help="Read an afl-ticket-v1 service contract without writing a ticket"
     )
     probe.add_argument("url")
+    wire = commands.add_parser(
+        "wire-demo", help="Inject real HTTP disconnects against an isolated ticket-service process"
+    )
+    wire.add_argument("--output", type=Path, default=Path("reports/wire"))
+    wire.add_argument("--max-steps", type=positive, default=16)
+    proxy = commands.add_parser("fault-proxy", help="Inject a fault plan into a fixed local HTTP upstream")
+    proxy.add_argument("--upstream", required=True)
+    proxy.add_argument("--plan", type=Path, required=True)
+    proxy.add_argument("--port", type=positive, default=8770)
+    proxy.add_argument("--trace", type=Path, default=Path("runs/proxy.jsonl"))
+    exploration = commands.add_parser(
+        "campaign", help="Explore seeded combinations with three deterministic policies"
+    )
+    exploration.add_argument("--cases", type=positive, default=64)
+    exploration.add_argument("--seed", type=int, default=7)
+    exploration.add_argument("--max-steps", type=positive, default=20)
+    exploration.add_argument("--output", type=Path, default=Path("reports/campaign"))
+    reduction = commands.add_parser("minimize", help="Reduce a recorded failure to a smaller action sequence")
+    reduction.add_argument("report", type=Path)
+    reduction.add_argument("--episode", required=True)
+    reduction.add_argument(
+        "--metric",
+        choices=("duplicates", "false_success", "false_failure", "wrong_payload"),
+        default="duplicates",
+    )
+    reduction.add_argument("--max-evaluations", type=positive, default=128)
+    reduction.add_argument("--output", type=Path, default=Path("reports/repro"))
+    reproduction = commands.add_parser(
+        "reproduce", help="Replay a reduced case; exit 1 if its invariant is violated"
+    )
+    reproduction.add_argument("artifact", type=Path)
     return root
 
 
@@ -123,7 +157,59 @@ def announce(db, experiment_id, output):
 def main(argv=None):
     args = parser().parse_args(argv)
     try:
-        if args.command == "scenarios":
+        if args.command == "wire-demo":
+            from .wire import run_wire_demo
+
+            data = run_wire_demo(args.output, args.max_steps)
+            print(
+                json.dumps(
+                    {"report": str((args.output / "index.html").resolve()), "summary": data["summary"]},
+                    indent=2,
+                )
+            )
+        elif args.command == "fault-proxy":
+            from .wire import FaultProxy, load_plan
+
+            proxy = FaultProxy(args.upstream, load_plan(args.plan), args.trace)
+            with ThreadingHTTPServer(("127.0.0.1", args.port), proxy.handler()) as server:
+                print(f"Fault proxy: http://127.0.0.1:{args.port}", flush=True)
+                server.serve_forever()
+        elif args.command == "campaign":
+            from .explore import campaign
+
+            data = campaign(args.output, args.cases, args.seed, args.max_steps)
+            print(
+                json.dumps(
+                    {"report": str((args.output / "index.html").resolve()), "summary": data["summary"]},
+                    indent=2,
+                )
+            )
+        elif args.command == "minimize":
+            from .explore import minimize
+
+            data = read_bundle(args.report)
+            row = next((row for row in data["results"] if row["episode_id"] == args.episode), None)
+            if row is None:
+                raise ValueError("Unknown episode")
+            print(json.dumps(minimize(row, args.metric, args.output, args.max_evaluations), indent=2))
+        elif args.command == "reproduce":
+            from .explore import reproduce
+
+            if args.artifact.stat().st_size > 2_000_000:
+                raise ValueError("Reproduction artifact exceeds 2 MB")
+            result = reproduce(json.loads(args.artifact.read_text()))
+            print(
+                json.dumps(
+                    {
+                        "failure_observed": result["failure_observed"],
+                        "metric": result["metric"],
+                        "metrics": result["result"]["metrics"],
+                    },
+                    indent=2,
+                )
+            )
+            return 1 if result["failure_observed"] else 0
+        elif args.command == "scenarios":
             for scenario in load_scenarios():
                 print(f"{scenario.id:24} {scenario.description}")
         elif args.command in {"demo", "run"}:
@@ -155,6 +241,8 @@ def main(argv=None):
             print(json.dumps(Database(args.db).list_experiments(), indent=2))
         elif args.command == "report":
             announce(Database(args.db), args.experiment, args.output)
+        elif args.command == "render":
+            print(write_report(read_bundle(args.report), args.output).resolve())
         elif args.command == "replay":
             source = read_bundle(args.report)
             row = next((r for r in source["results"] if r["episode_id"] == args.episode), None)

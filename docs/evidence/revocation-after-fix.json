@@ -1,0 +1,1069 @@
+{
+  "package_version": "0.2.0",
+  "result": {
+    "episode_id": "75d202e23d2f4f4e9182e5d6e7e5edff",
+    "experiment_id": "bd3ae84ac7be",
+    "scenario_id": "revoked-after-lost-ack",
+    "scenario_name": "Authorization changes after a lost acknowledgement",
+    "description": "The first write commits; its acknowledgement is lost. A later retry is rejected after authorization expires.",
+    "scenario_hash": "66a7684d8d311980236e19f15b1afa17c938000d795a2da82234c1ec496a15d7",
+    "scenario": {
+      "id": "revoked-after-lost-ack",
+      "name": "Authorization changes after a lost acknowledgement",
+      "description": "The first write commits; its acknowledgement is lost. A later retry is rejected after authorization expires.",
+      "fault": "timeout_after",
+      "idempotency": true,
+      "lookup": false,
+      "visibility_delay": 0,
+      "commit_delay": 3,
+      "fault_count": 1,
+      "key_ttl": null,
+      "crash_after_write": false,
+      "authorization_until": 1,
+      "retry_after": 2
+    },
+    "max_steps": 16,
+    "mode": "guarded",
+    "trial": 0,
+    "provider": "scripted",
+    "model": null,
+    "execution_status": "step_limit",
+    "decision": {
+      "status": "unknown",
+      "ticket_id": null,
+      "reason": "Step limit reached"
+    },
+    "metrics": {
+      "effects": 1,
+      "duplicates": false,
+      "missing": false,
+      "wrong_payload": false,
+      "false_success": false,
+      "false_failure": false,
+      "unknown": true,
+      "task_success": false,
+      "exactly_one_effect": true,
+      "create_calls": 16,
+      "final_tick": 16
+    },
+    "usage": {},
+    "protocol_errors": 0,
+    "steps": 16,
+    "duration_seconds": 0.0623,
+    "trace": [
+      {
+        "sequence": 0,
+        "tick": 0,
+        "scope": "agent",
+        "event": "action",
+        "details": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        }
+      },
+      {
+        "sequence": 1,
+        "tick": 1,
+        "scope": "tool",
+        "event": "create_request",
+        "details": {
+          "operation_id": "operation-75d202e23d2f4f4e9182e5d6e7e5edff",
+          "title": "Investigate dropped checkout events",
+          "key": "afl-d7c7bae03f6a63ad598ab08ebb32db6b164473a0"
+        }
+      },
+      {
+        "sequence": 2,
+        "tick": 1,
+        "scope": "world",
+        "event": "ticket_committed",
+        "details": {
+          "ticket_id": "T-1",
+          "title": "Investigate dropped checkout events"
+        }
+      },
+      {
+        "sequence": 3,
+        "tick": 1,
+        "scope": "tool",
+        "event": "create_response",
+        "details": {
+          "status": "uncertain",
+          "message": "Request timed out; commit status is unknown",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "sequence": 4,
+        "tick": 1,
+        "scope": "agent",
+        "event": "action",
+        "details": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        }
+      },
+      {
+        "sequence": 5,
+        "tick": 2,
+        "scope": "tool",
+        "event": "create_request",
+        "details": {
+          "operation_id": "operation-75d202e23d2f4f4e9182e5d6e7e5edff",
+          "title": "Investigate dropped checkout events",
+          "key": "afl-d7c7bae03f6a63ad598ab08ebb32db6b164473a0"
+        }
+      },
+      {
+        "sequence": 6,
+        "tick": 2,
+        "scope": "tool",
+        "event": "create_response",
+        "details": {
+          "status": "rejected",
+          "message": "Authorization has expired; no new write accepted",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "sequence": 7,
+        "tick": 2,
+        "scope": "agent",
+        "event": "action",
+        "details": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        }
+      },
+      {
+        "sequence": 8,
+        "tick": 3,
+        "scope": "tool",
+        "event": "create_request",
+        "details": {
+          "operation_id": "operation-75d202e23d2f4f4e9182e5d6e7e5edff",
+          "title": "Investigate dropped checkout events",
+          "key": "afl-d7c7bae03f6a63ad598ab08ebb32db6b164473a0"
+        }
+      },
+      {
+        "sequence": 9,
+        "tick": 3,
+        "scope": "tool",
+        "event": "create_response",
+        "details": {
+          "status": "rejected",
+          "message": "Authorization has expired; no new write accepted",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "sequence": 10,
+        "tick": 3,
+        "scope": "agent",
+        "event": "action",
+        "details": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        }
+      },
+      {
+        "sequence": 11,
+        "tick": 4,
+        "scope": "tool",
+        "event": "create_request",
+        "details": {
+          "operation_id": "operation-75d202e23d2f4f4e9182e5d6e7e5edff",
+          "title": "Investigate dropped checkout events",
+          "key": "afl-d7c7bae03f6a63ad598ab08ebb32db6b164473a0"
+        }
+      },
+      {
+        "sequence": 12,
+        "tick": 4,
+        "scope": "tool",
+        "event": "create_response",
+        "details": {
+          "status": "rejected",
+          "message": "Authorization has expired; no new write accepted",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "sequence": 13,
+        "tick": 4,
+        "scope": "agent",
+        "event": "action",
+        "details": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        }
+      },
+      {
+        "sequence": 14,
+        "tick": 5,
+        "scope": "tool",
+        "event": "create_request",
+        "details": {
+          "operation_id": "operation-75d202e23d2f4f4e9182e5d6e7e5edff",
+          "title": "Investigate dropped checkout events",
+          "key": "afl-d7c7bae03f6a63ad598ab08ebb32db6b164473a0"
+        }
+      },
+      {
+        "sequence": 15,
+        "tick": 5,
+        "scope": "tool",
+        "event": "create_response",
+        "details": {
+          "status": "rejected",
+          "message": "Authorization has expired; no new write accepted",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "sequence": 16,
+        "tick": 5,
+        "scope": "agent",
+        "event": "action",
+        "details": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        }
+      },
+      {
+        "sequence": 17,
+        "tick": 6,
+        "scope": "tool",
+        "event": "create_request",
+        "details": {
+          "operation_id": "operation-75d202e23d2f4f4e9182e5d6e7e5edff",
+          "title": "Investigate dropped checkout events",
+          "key": "afl-d7c7bae03f6a63ad598ab08ebb32db6b164473a0"
+        }
+      },
+      {
+        "sequence": 18,
+        "tick": 6,
+        "scope": "tool",
+        "event": "create_response",
+        "details": {
+          "status": "rejected",
+          "message": "Authorization has expired; no new write accepted",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "sequence": 19,
+        "tick": 6,
+        "scope": "agent",
+        "event": "action",
+        "details": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        }
+      },
+      {
+        "sequence": 20,
+        "tick": 7,
+        "scope": "tool",
+        "event": "create_request",
+        "details": {
+          "operation_id": "operation-75d202e23d2f4f4e9182e5d6e7e5edff",
+          "title": "Investigate dropped checkout events",
+          "key": "afl-d7c7bae03f6a63ad598ab08ebb32db6b164473a0"
+        }
+      },
+      {
+        "sequence": 21,
+        "tick": 7,
+        "scope": "tool",
+        "event": "create_response",
+        "details": {
+          "status": "rejected",
+          "message": "Authorization has expired; no new write accepted",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "sequence": 22,
+        "tick": 7,
+        "scope": "agent",
+        "event": "action",
+        "details": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        }
+      },
+      {
+        "sequence": 23,
+        "tick": 8,
+        "scope": "tool",
+        "event": "create_request",
+        "details": {
+          "operation_id": "operation-75d202e23d2f4f4e9182e5d6e7e5edff",
+          "title": "Investigate dropped checkout events",
+          "key": "afl-d7c7bae03f6a63ad598ab08ebb32db6b164473a0"
+        }
+      },
+      {
+        "sequence": 24,
+        "tick": 8,
+        "scope": "tool",
+        "event": "create_response",
+        "details": {
+          "status": "rejected",
+          "message": "Authorization has expired; no new write accepted",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "sequence": 25,
+        "tick": 8,
+        "scope": "agent",
+        "event": "action",
+        "details": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        }
+      },
+      {
+        "sequence": 26,
+        "tick": 9,
+        "scope": "tool",
+        "event": "create_request",
+        "details": {
+          "operation_id": "operation-75d202e23d2f4f4e9182e5d6e7e5edff",
+          "title": "Investigate dropped checkout events",
+          "key": "afl-d7c7bae03f6a63ad598ab08ebb32db6b164473a0"
+        }
+      },
+      {
+        "sequence": 27,
+        "tick": 9,
+        "scope": "tool",
+        "event": "create_response",
+        "details": {
+          "status": "rejected",
+          "message": "Authorization has expired; no new write accepted",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "sequence": 28,
+        "tick": 9,
+        "scope": "agent",
+        "event": "action",
+        "details": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        }
+      },
+      {
+        "sequence": 29,
+        "tick": 10,
+        "scope": "tool",
+        "event": "create_request",
+        "details": {
+          "operation_id": "operation-75d202e23d2f4f4e9182e5d6e7e5edff",
+          "title": "Investigate dropped checkout events",
+          "key": "afl-d7c7bae03f6a63ad598ab08ebb32db6b164473a0"
+        }
+      },
+      {
+        "sequence": 30,
+        "tick": 10,
+        "scope": "tool",
+        "event": "create_response",
+        "details": {
+          "status": "rejected",
+          "message": "Authorization has expired; no new write accepted",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "sequence": 31,
+        "tick": 10,
+        "scope": "agent",
+        "event": "action",
+        "details": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        }
+      },
+      {
+        "sequence": 32,
+        "tick": 11,
+        "scope": "tool",
+        "event": "create_request",
+        "details": {
+          "operation_id": "operation-75d202e23d2f4f4e9182e5d6e7e5edff",
+          "title": "Investigate dropped checkout events",
+          "key": "afl-d7c7bae03f6a63ad598ab08ebb32db6b164473a0"
+        }
+      },
+      {
+        "sequence": 33,
+        "tick": 11,
+        "scope": "tool",
+        "event": "create_response",
+        "details": {
+          "status": "rejected",
+          "message": "Authorization has expired; no new write accepted",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "sequence": 34,
+        "tick": 11,
+        "scope": "agent",
+        "event": "action",
+        "details": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        }
+      },
+      {
+        "sequence": 35,
+        "tick": 12,
+        "scope": "tool",
+        "event": "create_request",
+        "details": {
+          "operation_id": "operation-75d202e23d2f4f4e9182e5d6e7e5edff",
+          "title": "Investigate dropped checkout events",
+          "key": "afl-d7c7bae03f6a63ad598ab08ebb32db6b164473a0"
+        }
+      },
+      {
+        "sequence": 36,
+        "tick": 12,
+        "scope": "tool",
+        "event": "create_response",
+        "details": {
+          "status": "rejected",
+          "message": "Authorization has expired; no new write accepted",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "sequence": 37,
+        "tick": 12,
+        "scope": "agent",
+        "event": "action",
+        "details": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        }
+      },
+      {
+        "sequence": 38,
+        "tick": 13,
+        "scope": "tool",
+        "event": "create_request",
+        "details": {
+          "operation_id": "operation-75d202e23d2f4f4e9182e5d6e7e5edff",
+          "title": "Investigate dropped checkout events",
+          "key": "afl-d7c7bae03f6a63ad598ab08ebb32db6b164473a0"
+        }
+      },
+      {
+        "sequence": 39,
+        "tick": 13,
+        "scope": "tool",
+        "event": "create_response",
+        "details": {
+          "status": "rejected",
+          "message": "Authorization has expired; no new write accepted",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "sequence": 40,
+        "tick": 13,
+        "scope": "agent",
+        "event": "action",
+        "details": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        }
+      },
+      {
+        "sequence": 41,
+        "tick": 14,
+        "scope": "tool",
+        "event": "create_request",
+        "details": {
+          "operation_id": "operation-75d202e23d2f4f4e9182e5d6e7e5edff",
+          "title": "Investigate dropped checkout events",
+          "key": "afl-d7c7bae03f6a63ad598ab08ebb32db6b164473a0"
+        }
+      },
+      {
+        "sequence": 42,
+        "tick": 14,
+        "scope": "tool",
+        "event": "create_response",
+        "details": {
+          "status": "rejected",
+          "message": "Authorization has expired; no new write accepted",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "sequence": 43,
+        "tick": 14,
+        "scope": "agent",
+        "event": "action",
+        "details": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        }
+      },
+      {
+        "sequence": 44,
+        "tick": 15,
+        "scope": "tool",
+        "event": "create_request",
+        "details": {
+          "operation_id": "operation-75d202e23d2f4f4e9182e5d6e7e5edff",
+          "title": "Investigate dropped checkout events",
+          "key": "afl-d7c7bae03f6a63ad598ab08ebb32db6b164473a0"
+        }
+      },
+      {
+        "sequence": 45,
+        "tick": 15,
+        "scope": "tool",
+        "event": "create_response",
+        "details": {
+          "status": "rejected",
+          "message": "Authorization has expired; no new write accepted",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "sequence": 46,
+        "tick": 15,
+        "scope": "agent",
+        "event": "action",
+        "details": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        }
+      },
+      {
+        "sequence": 47,
+        "tick": 16,
+        "scope": "tool",
+        "event": "create_request",
+        "details": {
+          "operation_id": "operation-75d202e23d2f4f4e9182e5d6e7e5edff",
+          "title": "Investigate dropped checkout events",
+          "key": "afl-d7c7bae03f6a63ad598ab08ebb32db6b164473a0"
+        }
+      },
+      {
+        "sequence": 48,
+        "tick": 16,
+        "scope": "tool",
+        "event": "create_response",
+        "details": {
+          "status": "rejected",
+          "message": "Authorization has expired; no new write accepted",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "sequence": 49,
+        "tick": 16,
+        "scope": "agent",
+        "event": "final_report",
+        "details": {
+          "status": "unknown",
+          "ticket_id": null,
+          "reason": "Step limit reached"
+        }
+      },
+      {
+        "sequence": 50,
+        "tick": 16,
+        "scope": "grader",
+        "event": "effects_checked",
+        "details": {
+          "effects": 1,
+          "duplicates": false,
+          "missing": false,
+          "wrong_payload": false,
+          "false_success": false,
+          "false_failure": false,
+          "unknown": true,
+          "task_success": false,
+          "exactly_one_effect": true,
+          "create_calls": 16,
+          "final_tick": 16
+        }
+      }
+    ],
+    "effects": [
+      {
+        "ticket_id": "T-1",
+        "operation_id": "operation-75d202e23d2f4f4e9182e5d6e7e5edff",
+        "title": "Investigate dropped checkout events",
+        "committed_at": 1,
+        "visible_at": 1
+      }
+    ],
+    "visible_history": [
+      {
+        "action": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        },
+        "observation": {
+          "status": "uncertain",
+          "message": "Request timed out; commit status is unknown",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "action": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        },
+        "observation": {
+          "status": "uncertain",
+          "message": "This retry did not commit, but an earlier dispatch remains unresolved.",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "action": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        },
+        "observation": {
+          "status": "uncertain",
+          "message": "This retry did not commit, but an earlier dispatch remains unresolved.",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "action": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        },
+        "observation": {
+          "status": "uncertain",
+          "message": "This retry did not commit, but an earlier dispatch remains unresolved.",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "action": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        },
+        "observation": {
+          "status": "uncertain",
+          "message": "This retry did not commit, but an earlier dispatch remains unresolved.",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "action": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        },
+        "observation": {
+          "status": "uncertain",
+          "message": "This retry did not commit, but an earlier dispatch remains unresolved.",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "action": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        },
+        "observation": {
+          "status": "uncertain",
+          "message": "This retry did not commit, but an earlier dispatch remains unresolved.",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "action": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        },
+        "observation": {
+          "status": "uncertain",
+          "message": "This retry did not commit, but an earlier dispatch remains unresolved.",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "action": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        },
+        "observation": {
+          "status": "uncertain",
+          "message": "This retry did not commit, but an earlier dispatch remains unresolved.",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "action": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        },
+        "observation": {
+          "status": "uncertain",
+          "message": "This retry did not commit, but an earlier dispatch remains unresolved.",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "action": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        },
+        "observation": {
+          "status": "uncertain",
+          "message": "This retry did not commit, but an earlier dispatch remains unresolved.",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "action": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        },
+        "observation": {
+          "status": "uncertain",
+          "message": "This retry did not commit, but an earlier dispatch remains unresolved.",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "action": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        },
+        "observation": {
+          "status": "uncertain",
+          "message": "This retry did not commit, but an earlier dispatch remains unresolved.",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "action": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        },
+        "observation": {
+          "status": "uncertain",
+          "message": "This retry did not commit, but an earlier dispatch remains unresolved.",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "action": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        },
+        "observation": {
+          "status": "uncertain",
+          "message": "This retry did not commit, but an earlier dispatch remains unresolved.",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      },
+      {
+        "action": {
+          "name": "create_ticket",
+          "arguments": {
+            "title": "Investigate dropped checkout events",
+            "idempotency_key": null
+          }
+        },
+        "observation": {
+          "status": "uncertain",
+          "message": "This retry did not commit, but an earlier dispatch remains unresolved.",
+          "ticket_id": null,
+          "ticket_ids": [],
+          "retry_after": 0
+        }
+      }
+    ],
+    "action_replay": [
+      {
+        "name": "create_ticket",
+        "arguments": {
+          "title": "Investigate dropped checkout events",
+          "idempotency_key": null
+        }
+      },
+      {
+        "name": "create_ticket",
+        "arguments": {
+          "title": "Investigate dropped checkout events",
+          "idempotency_key": null
+        }
+      },
+      {
+        "name": "create_ticket",
+        "arguments": {
+          "title": "Investigate dropped checkout events",
+          "idempotency_key": null
+        }
+      },
+      {
+        "name": "create_ticket",
+        "arguments": {
+          "title": "Investigate dropped checkout events",
+          "idempotency_key": null
+        }
+      },
+      {
+        "name": "create_ticket",
+        "arguments": {
+          "title": "Investigate dropped checkout events",
+          "idempotency_key": null
+        }
+      },
+      {
+        "name": "create_ticket",
+        "arguments": {
+          "title": "Investigate dropped checkout events",
+          "idempotency_key": null
+        }
+      },
+      {
+        "name": "create_ticket",
+        "arguments": {
+          "title": "Investigate dropped checkout events",
+          "idempotency_key": null
+        }
+      },
+      {
+        "name": "create_ticket",
+        "arguments": {
+          "title": "Investigate dropped checkout events",
+          "idempotency_key": null
+        }
+      },
+      {
+        "name": "create_ticket",
+        "arguments": {
+          "title": "Investigate dropped checkout events",
+          "idempotency_key": null
+        }
+      },
+      {
+        "name": "create_ticket",
+        "arguments": {
+          "title": "Investigate dropped checkout events",
+          "idempotency_key": null
+        }
+      },
+      {
+        "name": "create_ticket",
+        "arguments": {
+          "title": "Investigate dropped checkout events",
+          "idempotency_key": null
+        }
+      },
+      {
+        "name": "create_ticket",
+        "arguments": {
+          "title": "Investigate dropped checkout events",
+          "idempotency_key": null
+        }
+      },
+      {
+        "name": "create_ticket",
+        "arguments": {
+          "title": "Investigate dropped checkout events",
+          "idempotency_key": null
+        }
+      },
+      {
+        "name": "create_ticket",
+        "arguments": {
+          "title": "Investigate dropped checkout events",
+          "idempotency_key": null
+        }
+      },
+      {
+        "name": "create_ticket",
+        "arguments": {
+          "title": "Investigate dropped checkout events",
+          "idempotency_key": null
+        }
+      },
+      {
+        "name": "create_ticket",
+        "arguments": {
+          "title": "Investigate dropped checkout events",
+          "idempotency_key": null
+        }
+      }
+    ]
+  }
+}

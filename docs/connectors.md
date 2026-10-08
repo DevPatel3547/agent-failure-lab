@@ -59,3 +59,24 @@ This release tests GitHub request construction, ambiguous responses, pagination 
 - [GitHub REST Issues](https://docs.github.com/en/rest/issues/issues): create, list, and update issue endpoints.
 
 Provider requests send the synthetic task, contract, and public history. Keep real credentials and private ticket contents out of fixtures and prompts.
+
+## Real HTTP fault proxy
+
+`afl fault-proxy --upstream http://127.0.0.1:8769 --plan examples/drop-response.json` starts a local reverse proxy. The upstream must be an explicit loopback IP and port; hostnames, remote addresses, credentials, base paths, and dynamic target URLs are refused. Incoming absolute-form paths cannot change the fixed upstream. It does not follow redirects or retry requests.
+
+Plans contain 1–100 rules with `method`, `path`, `occurrence`, and `action`. Rules match the path without query parameters. Each method/path pair has its own occurrence counter. Multiple rules for the same occurrence are rejected.
+
+| Action | Behavior |
+|---|---|
+| `disconnect_before` | Close the caller connection without forwarding |
+| `drop_response` | Forward once, read the bounded upstream response, then close without returning it |
+| `corrupt_response` | Forward once, replace the returned body with malformed JSON |
+| `http_503_before` | Return a synthetic 503 without forwarding |
+
+No fault action asserts that an effect committed. The wire demo verifies that separately through the owned service's ledger. `forward_attempted` is not proof of receipt; `upstream_responded` is not proof of a write; `response_write_completed` is not proof of application delivery.
+
+The proxy bounds request and response bodies to 2 MB and socket operations to ten seconds. It accepts GET/POST/PUT/PATCH/DELETE, strips hop-by-hop headers, preserves encoding on unchanged bodies, rejects chunked requests and duplicate Content-Length, and logs no headers, queries, or bodies. Paths themselves may still contain sensitive identifiers. Traces are investigation files and should be reviewed before sharing.
+
+This is HTTP/1.x development tooling: no TLS interception, streaming/SSE, WebSockets, general forward proxying, or production hardening. Concurrent rule occurrences follow observed arrival order; schedules are not guaranteed deterministic across concurrent runs.
+
+`wire-demo` uses a fresh separate service process and two SQLite files per episode, then cleans up the processes. It retains the local databases under the output directory's `private-runs` folder for investigation. The standard `run` command still evaluates live-model decisions against in-process simulated tools; it does not transparently route all model runs through this proxy.

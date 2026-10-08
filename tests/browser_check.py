@@ -81,6 +81,25 @@ def main():
             page.locator("#search").fill("lost-ack")
             assert page.locator(".case-button").count() == 3
             page.screenshot(path=str(root / "mobile.png"), full_page=True)
+            wire_report = Path("reports/wire/index.html")
+            if wire_report.exists():
+                page.set_viewport_size({"width": 1440, "height": 1100})
+                page.goto(wire_report.resolve().as_uri())
+                page.locator(".case-button").first.wait_for()
+                assert page.locator(".case-button").count() == 24
+                assert "Real HTTP" in page.locator("#metadata").inner_text()
+                assert "No AI models were evaluated" in page.locator("#notice").inner_text()
+                page.locator("#mode").select_option("reference")
+                assert page.locator(".case-button").count() == 8
+                page.locator("#wire-events summary").click()
+                assert "upstream_responded" in page.locator("#wire-events").inner_text()
+                page.locator("#mode").select_option("")
+                page.goto(wire_report.resolve().as_uri())
+                page.locator(".case-button").first.wait_for()
+                page.evaluate("window.scrollTo(0, 0)")
+                page.screenshot(path=str(output.with_name("wire-preview.png")), full_page=False)
+                page.set_viewport_size({"width": 390, "height": 844})
+                assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
             assert not errors, errors
             browser.close()
         print(

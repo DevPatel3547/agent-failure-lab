@@ -1,0 +1,58 @@
+{
+  "repro_schema": 1,
+  "scenario": {
+    "id": "generated-0057",
+    "name": "Generated case 58 \u00b7 lookup_unavailable",
+    "description": "A seeded synthetic combination of fault, visibility, authorization, restart, and key-lifetime conditions.",
+    "fault": "lookup_unavailable",
+    "idempotency": false,
+    "lookup": false,
+    "visibility_delay": 0,
+    "commit_delay": 10,
+    "fault_count": 3,
+    "key_ttl": null,
+    "crash_after_write": false,
+    "authorization_until": null,
+    "retry_after": 4
+  },
+  "actions": [
+    {
+      "name": "create_ticket",
+      "arguments": {
+        "title": "Investigate dropped checkout events",
+        "idempotency_key": null
+      }
+    },
+    {
+      "name": "create_ticket",
+      "arguments": {
+        "title": "Investigate dropped checkout events",
+        "idempotency_key": null
+      }
+    }
+  ],
+  "mode": "plain",
+  "metric": "duplicates",
+  "case_hash": "809c498566395420d09c1d690a53f9924ca60dd348e76b443be6d96d9cb1ea47",
+  "package_version": "0.2.0",
+  "source_episode": "10ea9ca0105b41f89d81d87d1de190c2",
+  "source_scenario_hash": "d674487e208cc77067e18877556ce16b0663e714a8fc9165845b2bb13dc93b06",
+  "original_actions": 5,
+  "reduced_actions": 2,
+  "evaluations": 5,
+  "minimality": "1-minimal by action deletion",
+  "scope": "Scenario parameters and recorded decisions are fixed. No global minimality or model-behavior claim.",
+  "metrics": {
+    "effects": 2,
+    "duplicates": true,
+    "missing": false,
+    "wrong_payload": false,
+    "false_success": false,
+    "false_failure": false,
+    "unknown": true,
+    "task_success": false,
+    "exactly_one_effect": false,
+    "create_calls": 2,
+    "final_tick": 2
+  }
+}

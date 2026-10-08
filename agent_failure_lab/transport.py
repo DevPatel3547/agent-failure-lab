@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import json
+import http.client
+
+from . import __version__
 import urllib.error
 import urllib.request
 from urllib.parse import urlparse
@@ -43,7 +46,7 @@ class JSONTransport:
             headers={
                 "Content-Type": "application/json",
                 "Accept": "application/json",
-                "User-Agent": "agent-failure-lab/0.1.0",
+                "User-Agent": f"agent-failure-lab/{__version__}",
                 **(headers or {}),
             },
         )
@@ -58,7 +61,7 @@ class JSONTransport:
             status = exc.code
             exc.close()
             raise TransportError(f"HTTP {status}; request was not automatically retried", status) from None
-        except (urllib.error.URLError, TimeoutError, OSError):
+        except (urllib.error.URLError, TimeoutError, OSError, http.client.HTTPException):
             raise TransportError(
                 "Connection failed or timed out; request was not automatically retried"
             ) from None

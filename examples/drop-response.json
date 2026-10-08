@@ -1,0 +1,3 @@
+[
+  {"method": "POST", "path": "/tickets", "occurrence": 1, "action": "drop_response"}
+]

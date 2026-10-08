@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import gzip
 from pathlib import Path
 
 from .grading import summarize
@@ -34,7 +35,14 @@ def validate_bundle(data: dict) -> None:
 def read_bundle(path: Path) -> dict:
     if path.stat().st_size > 50_000_000:
         raise ValueError("Report exceeds 50 MB")
-    data = json.loads(path.read_text(encoding="utf-8"))
+    if path.suffix == ".gz":
+        with gzip.open(path, "rb") as source:
+            encoded = source.read(50_000_001)
+        if len(encoded) > 50_000_000:
+            raise ValueError("Expanded report exceeds 50 MB")
+        data = json.loads(encoded)
+    else:
+        data = json.loads(path.read_text(encoding="utf-8"))
     validate_bundle(data)
     return data
 

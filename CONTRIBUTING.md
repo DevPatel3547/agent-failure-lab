@@ -10,3 +10,5 @@ A useful contribution starts with one reproducible connector failure. Describe t
 6. For report changes, run `python3 tests/browser_check.py` after installing the development extra and Playwright Chromium.
 
 Do not add fabricated live-model results or claims of universal exactly-once execution. New dependencies should solve a concrete need. Public issues should contain only sanitized reproductions; see SECURITY.md for sensitive reports.
+
+For a proxy change, test a real local HTTP connection, not only mocked responses. For a recovery change, preserve both safety and unresolved-outcome evidence. The reducer exports intentionally failing regression tests under the report directory; review and adapt them before adding them to the passing suite.

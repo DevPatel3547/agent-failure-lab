@@ -36,7 +36,17 @@ class RecoveryGateway:
         self.after_dispatch = after_dispatch
         self.key = "afl-" + digest({"operation_id": operation_id, "title": title})[:40]
 
-    def _persist(self, response: Observation) -> Observation:
+    def _persist(self, response: Observation, prior_uncertainty: bool = False) -> Observation:
+        if prior_uncertainty and response.status in {"rejected", "rate_limited"}:
+            response = Observation(
+                "uncertain", "This retry did not commit, but an earlier dispatch remains unresolved."
+            )
+        if response.status in {"created", "found"} and len(set(response.ticket_ids)) > 1:
+            response = Observation(
+                "conflict",
+                "Multiple committed tickets were observed; manual reconciliation is required.",
+                ticket_ids=response.ticket_ids,
+            )
         if response.status in {"created", "found"}:
             status = "confirmed"
         elif response.status == "rate_limited":
@@ -84,7 +94,7 @@ class RecoveryGateway:
         response = self.connector.create(self.operation_id, title, key)
         if self.after_dispatch:
             self.after_dispatch()
-        return self._persist(response)
+        return self._persist(response, prior_uncertainty=not first)
 
     def lookup(self) -> Observation:
         return self.connector.lookup(self.operation_id)

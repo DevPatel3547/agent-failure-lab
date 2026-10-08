@@ -1,0 +1,20 @@
+{
+  "package_version": "0.2.0",
+  "sha256": {
+    "v0.2-campaign.json.gz": "301dbe6b2f926bc1521d992d97d984f28da8289c447d4f1e177944c2870c9a88",
+    "v0.2-wire.json.gz": "2e66370d3fae2bf3eea16c8244f4fc938a17b4c58a7626960cb19908fb0bfe51",
+    "reduced-duplicate.json": "a8db69d4a48c4ddbd04d3c4328cd6c04362dba13a2ad3a54443a3c2a3df1e5e9",
+    "revocation-after-fix.json": "8dd2736623162643b88c8ab429358803947c56d7ef2fd2a4add3d7a519a001dc"
+  },
+  "campaign": {
+    "cases": 64,
+    "seed": 7,
+    "max_steps": 20
+  },
+  "wire": {
+    "cases": 24,
+    "max_steps": 16
+  },
+  "live_models": false,
+  "note": "Synthetic tasks; actual local HTTP faults in wire dataset. Hashes cover compressed bytes."
+}
